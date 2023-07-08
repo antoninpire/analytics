@@ -43,8 +43,6 @@ export default async function TopLocationsWidget() {
 
   const locations = data.map(({ location }) => location);
 
-  console.log(locations);
-
   const chartData = logs.map(({ location, count }, index) => ({
     name: locations[index] ?? location,
     value: count,

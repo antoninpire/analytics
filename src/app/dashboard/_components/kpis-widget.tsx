@@ -1,22 +1,26 @@
+import KpisTabs, { KPI_OPTIONS } from "@/app/dashboard/_components/kpis-tabs";
 import Widget from "@/app/dashboard/_components/widget";
 import { db } from "@/lib/db";
 import { logsTable } from "@/lib/db/schema";
-import { BarChart } from "@tremor/react";
+import { AreaChart } from "@tremor/react";
 import dayjs from "dayjs";
 import { sql } from "drizzle-orm";
+
+const kpiOption = KPI_OPTIONS.find(({ value }) => value === "visits")!;
 
 export default async function KpisWidget() {
   const logs = await db
     .select({
-      count: sql<number>`count(${logsTable.session_id})`.mapWith(Number),
+      pageViews: sql<number>`count(${logsTable.session_id})`.mapWith(Number),
       visits: sql<number>`count(distinct ${logsTable.session_id})`.mapWith(
         Number
       ),
       created_at: logsTable.created_at,
+      session_id: logsTable.session_id,
     })
     .from(logsTable)
-    .groupBy(logsTable.session_id, logsTable.created_at)
-    .orderBy(sql`COUNT(${logsTable.session_id}) DESC`);
+    .groupBy(logsTable.created_at, logsTable.session_id);
+  // .orderBy(sql`COUNT(${logsTable.session_id}) DESC`);
 
   const chartData = logs.map((log) => ({
     Date: dayjs(log.created_at).format("HH:mm"),
@@ -26,17 +30,15 @@ export default async function KpisWidget() {
   return (
     <Widget>
       <Widget.Title>KPIS</Widget.Title>
+      <KpisTabs />
       <Widget.Content>
-        <BarChart
+        <AreaChart
           data={chartData}
           index="Date"
-          categories={["Number of visits"]}
+          categories={[kpiOption.label]}
           colors={["blue"]}
-          className="h-32"
-          showXAxis={false}
-          showYAxis={false}
+          // valueFormatter={kpiOption.formatter}
           showLegend={false}
-          showGridLines={false}
         />
       </Widget.Content>
     </Widget>

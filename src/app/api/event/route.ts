@@ -8,7 +8,6 @@ export async function POST(request: Request) {
   const result = insertLogSchema.safeParse(res);
 
   if (result.success) {
-    console.log(result.data);
     await db.insert(logsTable).values(result.data);
   } else {
     return NextResponse.json({
