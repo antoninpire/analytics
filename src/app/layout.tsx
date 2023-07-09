@@ -17,13 +17,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
-      <Loglib
-        config={{
-          id: "analytics_antonin",
-          host: "https://www.loglib.io",
-        }}
-      />
+      <body className={inter.className}>
+        {children}
+        <Loglib
+          config={{
+            id: "analytics_antonin",
+            host: "https://www.loglib.io",
+          }}
+        />
+      </body>
     </html>
   );
 }
