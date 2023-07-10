@@ -52,64 +52,60 @@ export async function POST(request: Request) {
 
     if (!visitor) {
       // Visitor doesnt exist
-      await Promise.all([
-        db.insert(webVisitorsTable).values({
-          id: visitorId,
-          created_at: new Date(validated.timestamp),
-        }),
-        db.insert(webSessionsTable).values({
-          id: validated.session_id,
-          visitor_id: visitorId,
-          referrer: validated.referrer,
-          duration: validated.duration,
-          country: validated.location,
-          city: validated.location,
-          device: validated.device,
-          os: validated.os,
-          browser: validated.browser,
-          language: validated.locale,
-          created_at: new Date(validated.timestamp),
-          query_params: JSON.stringify(validated.queryParams),
-        }),
-        db.insert(webPageHitsTable).values({
-          created_at: new Date(validated.timestamp),
-          session_id: validated.session_id,
-          visitor_id: visitorId,
-          href: validated.href,
-          referrer: validated.referrer,
-          pathname: validated.pathname,
-          query_params: JSON.stringify(validated.queryParams),
-          id: pageHitId,
-        }),
-      ]);
+      await db.insert(webVisitorsTable).values({
+        id: visitorId,
+        created_at: new Date(validated.timestamp),
+      });
+      await db.insert(webSessionsTable).values({
+        id: validated.session_id,
+        visitor_id: visitorId,
+        referrer: validated.referrer,
+        duration: validated.duration,
+        country: validated.location,
+        city: validated.location,
+        device: validated.device,
+        os: validated.os,
+        browser: validated.browser,
+        language: validated.locale,
+        created_at: new Date(validated.timestamp),
+        query_params: JSON.stringify(validated.queryParams),
+      });
+      await db.insert(webPageHitsTable).values({
+        created_at: new Date(validated.timestamp),
+        session_id: validated.session_id,
+        visitor_id: visitorId,
+        href: validated.href,
+        referrer: validated.referrer,
+        pathname: validated.pathname,
+        query_params: JSON.stringify(validated.queryParams),
+        id: pageHitId,
+      });
     } else {
       // Visitor already exists
-      await Promise.all([
-        db.insert(webSessionsTable).values({
-          id: validated.session_id,
-          visitor_id: visitorId,
-          referrer: validated.referrer,
-          duration: validated.duration,
-          country: validated.location,
-          city: validated.location,
-          device: validated.device,
-          os: validated.os,
-          browser: validated.browser,
-          language: validated.locale,
-          created_at: new Date(validated.timestamp),
-          query_params: JSON.stringify(validated.queryParams),
-        }),
-        db.insert(webPageHitsTable).values({
-          created_at: new Date(validated.timestamp),
-          session_id: validated.session_id,
-          visitor_id: visitorId,
-          href: validated.href,
-          referrer: validated.referrer,
-          pathname: validated.pathname,
-          query_params: JSON.stringify(validated.queryParams),
-          id: pageHitId,
-        }),
-      ]);
+      await db.insert(webSessionsTable).values({
+        id: validated.session_id,
+        visitor_id: visitorId,
+        referrer: validated.referrer,
+        duration: validated.duration,
+        country: validated.location,
+        city: validated.location,
+        device: validated.device,
+        os: validated.os,
+        browser: validated.browser,
+        language: validated.locale,
+        created_at: new Date(validated.timestamp),
+        query_params: JSON.stringify(validated.queryParams),
+      });
+      await db.insert(webPageHitsTable).values({
+        created_at: new Date(validated.timestamp),
+        session_id: validated.session_id,
+        visitor_id: visitorId,
+        href: validated.href,
+        referrer: validated.referrer,
+        pathname: validated.pathname,
+        query_params: JSON.stringify(validated.queryParams),
+        id: pageHitId,
+      });
     }
   } else {
     // Session exists
