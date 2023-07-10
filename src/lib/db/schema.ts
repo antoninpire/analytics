@@ -1,4 +1,3 @@
-import { createId } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
 import {
   int,
@@ -24,24 +23,8 @@ export const logsTable = mysqlTable("logs", {
 
 export const insertLogSchema = createInsertSchema(logsTable).omit({ id: true });
 
-// model WebVisitor {
-//   id        String   @id @default(cuid())
-//   data      String   @default("{}")
-//   createdAt DateTime @default(now()) @map("created_at")
-//   updatedAt DateTime @updatedAt @map("updated_at")
-//   websiteId String   @map("website_id")
-
-//   Session  WebSession[]
-//   Pageview WebPageview[]
-//   WebEvent WebEvent[]
-//   Website  Website       @relation(fields: [websiteId], references: [id], onDelete: Cascade)
-
-//   @@index([websiteId])
-//   @@map("web_user")
-// }
-
 export const webVisitorsTable = mysqlTable("web_visitors", {
-  id: varchar("id", { length: 128 }).primaryKey().default(createId()),
+  id: varchar("id", { length: 128 }).primaryKey(),
 
   created_at: timestamp("created_at").notNull(),
 });
@@ -83,7 +66,7 @@ export const webSessionsRelations = relations(
 );
 
 export const webPageHitsTable = mysqlTable("web_page_hits", {
-  id: varchar("id", { length: 128 }).primaryKey().default(createId()),
+  id: varchar("id", { length: 128 }).primaryKey(),
   visitor_id: varchar("visitor_id", { length: 128 })
     .notNull()
     .references(() => webVisitorsTable.id, {

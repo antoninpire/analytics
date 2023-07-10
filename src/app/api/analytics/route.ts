@@ -39,6 +39,8 @@ export async function POST(request: Request) {
     where: (table, { eq }) => eq(table.id, validated.session_id),
   });
 
+  const pageHitId = createId();
+
   if (session === undefined) {
     // Session doesnt exist
 
@@ -47,6 +49,7 @@ export async function POST(request: Request) {
     const visitor = await db.query.webVisitorsTable.findFirst({
       where: (table, { eq }) => eq(table.id, visitorId),
     });
+
     if (!visitor) {
       // Visitor doesnt exist
       await Promise.all([
@@ -76,6 +79,7 @@ export async function POST(request: Request) {
           referrer: validated.referrer,
           pathname: validated.pathname,
           query_params: JSON.stringify(validated.queryParams),
+          id: pageHitId,
         }),
       ]);
     } else {
@@ -103,6 +107,7 @@ export async function POST(request: Request) {
           referrer: validated.referrer,
           pathname: validated.pathname,
           query_params: JSON.stringify(validated.queryParams),
+          id: pageHitId,
         }),
       ]);
     }
@@ -133,6 +138,7 @@ export async function POST(request: Request) {
             referrer: validated.referrer,
             pathname: validated.pathname,
             query_params: JSON.stringify(validated.queryParams),
+            id: pageHitId,
           }),
         ]);
       else
