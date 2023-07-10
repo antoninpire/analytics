@@ -524,9 +524,11 @@
   }
 
   function _setSessionId() {
-    const sessionId = _getSessionId() || _uuidv4();
+    const oldSessionId = _getSessionId();
+    const sessionId = oldSessionId || _uuidv4();
     localStorage.setItem(SESSION_ID_STORAGE_KEY, sessionId);
     localStorage.setItem(SESSION_START_STORAGE_KEY, new Date().toISOString());
+    if (!oldSessionId) _sendAnalytics();
   }
 
   function _sendAnalytics() {
