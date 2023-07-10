@@ -526,11 +526,13 @@
   function _setSessionId() {
     const sessionId = _getSessionId() || _uuidv4();
     localStorage.setItem(SESSION_ID_STORAGE_KEY, sessionId);
-    if (!_getSessionStart())
-      localStorage.setItem(SESSION_START_STORAGE_KEY, new Date().toISOString());
+    localStorage.setItem(SESSION_START_STORAGE_KEY, new Date().toISOString());
   }
 
   function _sendAnalytics() {
+    if (window.__nightmare || window.navigator.webdriver || window.Cypress)
+      return;
+
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const country = timezones[timezone];
     const locale =
