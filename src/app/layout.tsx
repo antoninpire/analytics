@@ -17,6 +17,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <script defer src="../script.js" />
+      </head>
       <body className={inter.className}>
         {children}
         <Loglib
