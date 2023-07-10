@@ -1,3 +1,10 @@
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
 export const cx = (...args: (string | undefined | false)[]) =>
   args.filter(Boolean).join(" ");
 
@@ -18,34 +25,4 @@ export function formatMinSec(totalSeconds: number) {
 
 export function formatPercentage(value: number) {
   return `${value ? (value * 100).toFixed(2) : "0"}%`;
-}
-
-export function getDeviceType(ua: string) {
-  if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
-    return "Tablet";
-  }
-  if (
-    /Mobile|iP(hone|od)|Android|BlackBerry|IEMobile|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(
-      ua
-    )
-  ) {
-    return "Mobile";
-  }
-  return "Desktop";
-}
-
-export function getBrowser(userAgent: string) {
-  if (userAgent.includes("Chrome")) {
-    return "Google Chrome";
-  } else if (userAgent.includes("Firefox")) {
-    return "Mozilla Firefox";
-  } else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) {
-    return "Apple Safari";
-  } else if (userAgent.includes("MSIE") || userAgent.includes("Trident")) {
-    return "Internet Explorer";
-  } else if (userAgent.includes("Edge")) {
-    return "Microsoft Edge";
-  } else {
-    return "Unknown Browser";
-  }
 }
