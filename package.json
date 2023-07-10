@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "db:migrate": "drizzle-kit generate:mysql",
-    "build:script": "npx parcel build src/script.js"
+    "build:script": "npx parcel build src/script.js --dist-dir public/static"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.1.1",
