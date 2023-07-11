@@ -38,8 +38,6 @@ export async function POST(request: Request) {
 
   const headers = request.headers;
 
-  console.log(headers);
-
   const currentWebsiteUrl = new URL(headers.get("origin") ?? validated.href);
   const websiteUrl = new URL(website.url);
 
@@ -47,7 +45,6 @@ export async function POST(request: Request) {
     return new NextResponse("Website not found", { status: 405 });
 
   let ip = headers.get("x-real-ip") as string;
-
   const forwardedFor = headers.get("x-forwarded-for") as string;
   if (!ip && forwardedFor) {
     ip = forwardedFor?.split(",").at(0) ?? "Unknown";
@@ -61,7 +58,6 @@ export async function POST(request: Request) {
 
   if (session === undefined) {
     // Session doesnt exist
-
     const visitorId = ip === "Unknown" ? createId() : ip;
 
     const visitor = await db.query.webVisitorsTable.findFirst({
@@ -164,4 +160,6 @@ export async function POST(request: Request) {
           .where(eq(webSessionsTable.id, validated.session_id));
     }
   }
+
+  return new NextResponse("ok", { status: 200 });
 }

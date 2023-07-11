@@ -91,7 +91,7 @@ export default function ClientPage() {
     // console.log(body);
 
     const body = {
-      session_id: "211ea4dd-0248-46f0-b56d-f38e2f38a916",
+      session_id: "211ea4dd-0248-46f0-b56d-f38e2f38a917",
       user_agent:
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
       locale: "en-US",
@@ -107,6 +107,7 @@ export default function ClientPage() {
       },
       duration: 30,
       timestamp: new Date().toISOString(),
+      website_token: "hello_world",
     };
 
     fetch("/api/analytics", {
