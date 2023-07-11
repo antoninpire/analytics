@@ -15,6 +15,13 @@
       "when": 1689008138052,
       "tag": "0001_unique_sersi",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1689069483771,
+      "tag": "0002_ancient_polaris",
+      "breakpoints": true
     }
   ]
 }

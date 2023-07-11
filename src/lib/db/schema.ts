@@ -23,6 +23,23 @@ export const logsTable = mysqlTable("logs", {
 
 export const insertLogSchema = createInsertSchema(logsTable).omit({ id: true });
 
+export const websitesTable = mysqlTable("websites", {
+  id: varchar("id", { length: 128 }).primaryKey(),
+  userId: varchar("tenantId", { length: 128 }).notNull(),
+  name: varchar("name", { length: 128 }).notNull(),
+  url: varchar("url", { length: 512 }).notNull(),
+  created_at: timestamp("created_at").notNull(),
+});
+
+// export const apiKeysTable = mysqlTable("api_keys", {
+//   id: varchar("id", { length: 128 }).primaryKey(),
+//   tenantId: varchar("tenantId", { length: 128 }).notNull(),
+//   hash: varchar("hash", { length: 128 }).notNull(),
+//   first_characters: varchar("first_characters", { length: 4 }).notNull(),
+//   last_characters: varchar("last_characters", { length: 4 }).notNull(),
+//   created_at: timestamp("created_at").notNull(),
+// });
+
 export const webVisitorsTable = mysqlTable("web_visitors", {
   id: varchar("id", { length: 128 }).primaryKey(),
 

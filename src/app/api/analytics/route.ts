@@ -6,6 +6,7 @@ import {
 } from "@/lib/db/schema";
 import { createId } from "@paralleldrive/cuid2";
 import { eq } from "drizzle-orm";
+import { NextResponse } from "next/server";
 import { z } from "zod";
 
 const schema = z.object({
@@ -21,12 +22,32 @@ const schema = z.object({
   browser: z.string().min(1),
   duration: z.number().min(0),
   timestamp: z.string().min(1),
+  website_token: z.string().min(1),
 });
 
 export async function POST(request: Request) {
   const body = await request.json();
 
   const validated = schema.parse(body);
+
+  const website = await db.query.websitesTable.findFirst({
+    where: (table, { eq }) => eq(table.id, validated.website_token),
+  });
+
+  if (!website) return new NextResponse("Website not found", { status: 404 });
+
+  const currentWebsiteUrl = new URL(request.url);
+  const websiteUrl = new URL(website.url);
+
+  console.log(
+    request.url,
+    website.url,
+    currentWebsiteUrl.origin,
+    websiteUrl.origin
+  );
+
+  if (currentWebsiteUrl.origin !== websiteUrl.origin)
+    return new NextResponse("Website not found", { status: 404 });
 
   let ip = request.headers.get("x-real-ip") as string;
 
