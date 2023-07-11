@@ -1,9 +1,12 @@
-import { relations } from "drizzle-orm";
+import { InferModel, relations } from "drizzle-orm";
 import {
+  bigint,
+  boolean,
   int,
   mysqlEnum,
   mysqlTable,
   timestamp,
+  uniqueIndex,
   varchar,
 } from "drizzle-orm/mysql-core";
 import { createInsertSchema } from "drizzle-zod";
@@ -23,13 +26,91 @@ export const logsTable = mysqlTable("logs", {
 
 export const insertLogSchema = createInsertSchema(logsTable).omit({ id: true });
 
+// Auth tables
+export const usersTable = mysqlTable(
+  "auth_user",
+  {
+    id: varchar("id", {
+      length: 15,
+    }).primaryKey(),
+    // other user attributes
+    email: varchar("email", {
+      length: 255,
+    }).notNull(),
+  },
+  (users) => ({
+    emailIndex: uniqueIndex("email_idx").on(users.email),
+  })
+);
+
+export const usersRelations = relations(usersTable, ({ one, many }) => ({
+  websites: many(websitesTable),
+}));
+
+export type User = InferModel<typeof usersTable>;
+
+export const sessionsTable = mysqlTable("auth_session", {
+  id: varchar("id", {
+    length: 128,
+  }).primaryKey(),
+  userId: varchar("user_id", {
+    length: 15,
+  })
+    .notNull()
+    .references(() => usersTable.id, {
+      onDelete: "cascade",
+    }),
+  activeExpires: bigint("active_expires", {
+    mode: "number",
+  }).notNull(),
+  idleExpires: bigint("idle_expires", {
+    mode: "number",
+  }).notNull(),
+});
+
+export const authKeysTable = mysqlTable("auth_key", {
+  id: varchar("id", {
+    length: 255,
+  }).primaryKey(),
+  userId: varchar("user_id", {
+    length: 15,
+  })
+    .notNull()
+    .references(() => usersTable.id, {
+      onDelete: "cascade",
+    }),
+  primaryKey: boolean("primary_key").notNull(),
+  hashedPassword: varchar("hashed_password", {
+    length: 255,
+  }),
+  expires: bigint("expires", {
+    mode: "number",
+  }),
+});
+
 export const websitesTable = mysqlTable("websites", {
   id: varchar("id", { length: 128 }).primaryKey(),
-  userId: varchar("tenantId", { length: 128 }).notNull(),
+  user_id: varchar("user_id", { length: 128 })
+    .notNull()
+    .references(() => usersTable.id, {
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    }),
   name: varchar("name", { length: 128 }).notNull(),
   url: varchar("url", { length: 512 }).notNull(),
   created_at: timestamp("created_at").notNull(),
 });
+
+export const webSitesRelations = relations(websitesTable, ({ one, many }) => ({
+  user: one(usersTable, {
+    fields: [websitesTable.user_id],
+    references: [usersTable.id],
+  }),
+}));
+
+export type Website = InferModel<typeof websitesTable> & {
+  user?: User;
+};
 
 // export const apiKeysTable = mysqlTable("api_keys", {
 //   id: varchar("id", { length: 128 }).primaryKey(),
@@ -42,20 +123,38 @@ export const websitesTable = mysqlTable("websites", {
 
 export const webVisitorsTable = mysqlTable("web_visitors", {
   id: varchar("id", { length: 128 }).primaryKey(),
-
+  website_id: varchar("website_id", { length: 128 })
+    .notNull()
+    .references(() => websitesTable.id, {
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    }),
   created_at: timestamp("created_at").notNull(),
 });
 
-export const webVisitorsRelations = relations(webVisitorsTable, ({ many }) => ({
-  sessions: many(webSessionsTable),
-  pageHits: many(webPageHitsTable),
-}));
+export const webVisitorsRelations = relations(
+  webVisitorsTable,
+  ({ many, one }) => ({
+    sessions: many(webSessionsTable),
+    pageHits: many(webPageHitsTable),
+    website: one(websitesTable, {
+      fields: [webVisitorsTable.website_id],
+      references: [websitesTable.id],
+    }),
+  })
+);
 
 export const webSessionsTable = mysqlTable("web_sessions", {
   id: varchar("id", { length: 128 }).primaryKey(),
   visitor_id: varchar("visitor_id", { length: 128 })
     .notNull()
     .references(() => webVisitorsTable.id, {
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    }),
+  website_id: varchar("website_id", { length: 128 })
+    .notNull()
+    .references(() => websitesTable.id, {
       onDelete: "cascade",
       onUpdate: "cascade",
     }),
@@ -79,6 +178,10 @@ export const webSessionsRelations = relations(
       references: [webVisitorsTable.id],
     }),
     pageHits: many(webPageHitsTable),
+    website: one(websitesTable, {
+      fields: [webSessionsTable.website_id],
+      references: [websitesTable.id],
+    }),
   })
 );
 
@@ -93,6 +196,12 @@ export const webPageHitsTable = mysqlTable("web_page_hits", {
   session_id: varchar("session_id", { length: 128 })
     .notNull()
     .references(() => webSessionsTable.id, {
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    }),
+  website_id: varchar("website_id", { length: 128 })
+    .notNull()
+    .references(() => websitesTable.id, {
       onDelete: "cascade",
       onUpdate: "cascade",
     }),
@@ -111,5 +220,9 @@ export const webPageHitsRelations = relations(webPageHitsTable, ({ one }) => ({
   session: one(webSessionsTable, {
     fields: [webPageHitsTable.session_id],
     references: [webSessionsTable.id],
+  }),
+  website: one(websitesTable, {
+    fields: [webPageHitsTable.website_id],
+    references: [websitesTable.id],
   }),
 }));
