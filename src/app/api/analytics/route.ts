@@ -40,6 +40,8 @@ export async function POST(request: Request) {
   const websiteUrl = new URL(website.url);
 
   console.log(
+    request.headers.get("origin"),
+    validated.href,
     request.url,
     website.url,
     currentWebsiteUrl.origin,
