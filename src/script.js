@@ -429,9 +429,6 @@
   const SESSION_ID_STORAGE_KEY = "analytics-session-id";
   const SESSION_START_STORAGE_KEY = "analytics-session-start";
   const MAX_AGE = 18000 * 1000;
-  let website_token = document.currentScript
-    ? document.currentScript.getAttribute("data-token")
-    : "";
 
   function getBrowserName(userAgent) {
     if (userAgent.includes("Chrome")) {
@@ -564,7 +561,7 @@
         ? new Date().getTime() - new Date(_getSessionStart()).getTime()
         : 0,
       timestamp: new Date().toISOString(),
-      website_token,
+      website_token: document.currentScript?.getAttribute("data-token"),
     };
 
     setTimeout(
