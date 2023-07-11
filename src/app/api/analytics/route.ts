@@ -36,19 +36,19 @@ export async function POST(request: Request) {
 
   if (!website) return new NextResponse("Website not found", { status: 404 });
 
-  const currentWebsiteUrl = new URL(
-    request.headers.get("origin") ?? validated.href
-  );
-  const websiteUrl = new URL(website.url);
+  const headers = request.headers;
 
-  console.log(currentWebsiteUrl.origin, websiteUrl.origin);
+  console.log(headers);
+
+  const currentWebsiteUrl = new URL(headers.get("origin") ?? validated.href);
+  const websiteUrl = new URL(website.url);
 
   if (currentWebsiteUrl.hostname !== websiteUrl.hostname)
     return new NextResponse("Website not found", { status: 405 });
 
-  let ip = request.headers.get("x-real-ip") as string;
+  let ip = headers.get("x-real-ip") as string;
 
-  const forwardedFor = request.headers.get("x-forwarded-for") as string;
+  const forwardedFor = headers.get("x-forwarded-for") as string;
   if (!ip && forwardedFor) {
     ip = forwardedFor?.split(",").at(0) ?? "Unknown";
   }
