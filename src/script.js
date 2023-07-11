@@ -546,27 +546,29 @@
           navigator.browserLanguage ||
           "en";
 
+    const body = {
+      session_id: _getSessionId(),
+      user_agent: window.navigator.userAgent,
+      locale,
+      location: country,
+      referrer: document.referrer,
+      pathname: window.location.pathname,
+      href: window.location.href,
+      browser: getBrowserName(window.navigator.userAgent),
+      os: getOSName(window.navigator.userAgent),
+      device: getDeviceType(window.navigator.userAgent),
+      queryParams: getQueryParams(),
+      duration: _getSessionStart()
+        ? new Date().getTime() - new Date(_getSessionStart()).getTime()
+        : 0,
+      timestamp: new Date().toISOString(),
+      website_token: DATA_TOKEN,
+    };
+
     setTimeout(
       fetch("https://analytics.antonin.dev/api/analytics", {
         method: "post",
-        body: JSON.stringify({
-          session_id: _getSessionId(),
-          user_agent: window.navigator.userAgent,
-          locale,
-          location: country,
-          referrer: document.referrer,
-          pathname: window.location.pathname,
-          href: window.location.href,
-          browser: getBrowserName(window.navigator.userAgent),
-          os: getOSName(window.navigator.userAgent),
-          device: getDeviceType(window.navigator.userAgent),
-          queryParams: getQueryParams(),
-          duration: _getSessionStart()
-            ? new Date().getTime() - new Date(_getSessionStart()).getTime()
-            : 0,
-          timestamp: new Date().toISOString(),
-          website_token: DATA_TOKEN,
-        }),
+        body: JSON.stringify(body),
       }),
       300
     );
