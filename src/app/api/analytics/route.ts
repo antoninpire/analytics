@@ -69,6 +69,7 @@ export async function POST(request: Request) {
       await db.insert(webVisitorsTable).values({
         id: visitorId,
         created_at: new Date(validated.timestamp),
+        website_id: validated.website_token,
       });
       await db.insert(webSessionsTable).values({
         id: validated.session_id,
@@ -83,6 +84,7 @@ export async function POST(request: Request) {
         language: validated.locale,
         created_at: new Date(validated.timestamp),
         query_params: JSON.stringify(validated.queryParams),
+        website_id: validated.website_token,
       });
       await db.insert(webPageHitsTable).values({
         created_at: new Date(validated.timestamp),
@@ -93,6 +95,7 @@ export async function POST(request: Request) {
         pathname: validated.pathname,
         query_params: JSON.stringify(validated.queryParams),
         id: pageHitId,
+        website_id: validated.website_token,
       });
     } else {
       // Visitor already exists
@@ -109,6 +112,7 @@ export async function POST(request: Request) {
         language: validated.locale,
         created_at: new Date(validated.timestamp),
         query_params: JSON.stringify(validated.queryParams),
+        website_id: validated.website_token,
       });
       await db.insert(webPageHitsTable).values({
         created_at: new Date(validated.timestamp),
@@ -119,6 +123,7 @@ export async function POST(request: Request) {
         pathname: validated.pathname,
         query_params: JSON.stringify(validated.queryParams),
         id: pageHitId,
+        website_id: validated.website_token,
       });
     }
   } else {
@@ -149,6 +154,7 @@ export async function POST(request: Request) {
             pathname: validated.pathname,
             query_params: JSON.stringify(validated.queryParams),
             id: pageHitId,
+            website_id: validated.website_token,
           }),
         ]);
       else
