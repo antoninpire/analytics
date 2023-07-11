@@ -47,7 +47,7 @@ export async function POST(request: Request) {
   );
 
   if (currentWebsiteUrl.origin !== websiteUrl.origin)
-    return new NextResponse("Website not found", { status: 404 });
+    return new NextResponse("Website not found", { status: 405 });
 
   let ip = request.headers.get("x-real-ip") as string;
 

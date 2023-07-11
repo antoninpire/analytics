@@ -529,10 +529,10 @@
     const sessionId = oldSessionId || _uuidv4();
     localStorage.setItem(SESSION_ID_STORAGE_KEY, sessionId);
     localStorage.setItem(SESSION_START_STORAGE_KEY, new Date().toISOString());
-    if (!oldSessionId) _sendAnalytics();
+    if (!oldSessionId) _sendAnalytics(sessionId);
   }
 
-  function _sendAnalytics() {
+  function _sendAnalytics(session_id) {
     if (window.__nightmare || window.navigator.webdriver || window.Cypress)
       return;
 
@@ -547,7 +547,7 @@
           "en";
 
     const body = {
-      session_id: _getSessionId(),
+      session_id: session_id || _getSessionId(),
       user_agent: window.navigator.userAgent,
       locale,
       location: country,
