@@ -36,17 +36,12 @@ export async function POST(request: Request) {
 
   if (!website) return new NextResponse("Website not found", { status: 404 });
 
-  const currentWebsiteUrl = new URL(request.url);
+  const currentWebsiteUrl = new URL(
+    request.headers.get("origin") ?? validated.href
+  );
   const websiteUrl = new URL(website.url);
 
-  console.log(
-    request.headers.get("origin"),
-    validated.href,
-    request.url,
-    website.url,
-    currentWebsiteUrl.origin,
-    websiteUrl.origin
-  );
+  console.log(currentWebsiteUrl.origin, websiteUrl.origin);
 
   if (currentWebsiteUrl.hostname !== websiteUrl.hostname)
     return new NextResponse("Website not found", { status: 405 });
