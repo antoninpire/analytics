@@ -283,14 +283,3 @@ export default async function DashboardContent(props: DashboardContentProps) {
     </div>
   );
 }
-
-/*
-  Infos manquantes:
-    - top devices
-    - top browsers
-    - top pages
-    - top referrers / sources (by referrer, utm_source & utm_campain)
-    - top countries / locations (by country city)
-    - current visitors / users online
-    - Visitors evolution over time
-*/
