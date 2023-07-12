@@ -1,0 +1,1 @@
+ALTER TABLE `web_sessions` ADD `updated_at` timestamp DEFAULT (now()) NOT NULL;

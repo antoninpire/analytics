@@ -168,6 +168,7 @@ export const webSessionsTable = mysqlTable("web_sessions", {
   browser: varchar("browser", { length: 128 }),
   language: varchar("language", { length: 128 }),
   created_at: timestamp("created_at").notNull(),
+  updated_at: timestamp("updated_at").notNull().defaultNow().onUpdateNow(),
 });
 
 export const webSessionsRelations = relations(

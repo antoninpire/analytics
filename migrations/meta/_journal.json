@@ -36,6 +36,20 @@
       "when": 1689085519414,
       "tag": "0004_amusing_mulholland_black",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1689182494296,
+      "tag": "0005_slimy_radioactive_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1689182536739,
+      "tag": "0006_bright_vertigo",
+      "breakpoints": true
     }
   ]
 }
