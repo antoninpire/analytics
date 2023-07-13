@@ -9,11 +9,13 @@ import {
 import { verifySignature } from "@upstash/qstash/nextjs";
 import dayjs from "dayjs";
 import { and, eq, sql } from "drizzle-orm";
+import { NextApiRequest, NextApiResponse } from "next";
 import { NextResponse } from "next/server";
-import { sendEmail } from "../../../../../emails";
-import Summary from "../../../../../emails/summary";
+import { sendEmail } from "../../../../emails";
+import Summary from "../../../../emails/summary";
 
-export const GET = verifySignature(async () => {
+// Runs every first on the month
+async function handler(_req: NextApiRequest, res: NextApiResponse) {
   const startDateObj = dayjs().subtract(1, "month").startOf("month").toDate();
   const endDateObj = dayjs().subtract(1, "month").endOf("month").toDate();
   const duration = endDateObj.getTime() - startDateObj.getTime();
@@ -129,4 +131,6 @@ export const GET = verifySignature(async () => {
   }
 
   return NextResponse.json({ success: true });
-});
+}
+
+export default verifySignature(handler);
