@@ -10,14 +10,13 @@ import { verifySignature } from "@upstash/qstash/nextjs";
 import dayjs from "dayjs";
 import { and, eq, sql } from "drizzle-orm";
 import { NextApiRequest, NextApiResponse } from "next";
-import { NextResponse } from "next/server";
 import { sendEmail } from "../../../../emails";
 import Summary from "../../../../emails/summary";
 
 // Runs every first on the month
 async function handler(_req: NextApiRequest, res: NextApiResponse) {
-  const startDateObj = dayjs().subtract(1, "month").startOf("month").toDate();
-  const endDateObj = dayjs().subtract(1, "month").endOf("month").toDate();
+  const startDateObj = dayjs().startOf("month").toDate();
+  const endDateObj = dayjs().endOf("month").toDate();
   const duration = endDateObj.getTime() - startDateObj.getTime();
   const pastEndDateObj = new Date(startDateObj.getTime() - duration);
 
@@ -111,7 +110,7 @@ async function handler(_req: NextApiRequest, res: NextApiResponse) {
 
     const topPages = Object.entries(pages)
       .sort((a, b) => b[1] - a[1])
-      .slice(5);
+      .slice(0, 5);
 
     await sendEmail({
       email: website.user.email,
@@ -123,14 +122,14 @@ async function handler(_req: NextApiRequest, res: NextApiResponse) {
         newVisitors: newVisitorsStats,
         from: startDateObj.toISOString(),
         to: endDateObj.toISOString(),
-        topPages,
+        topPages: topPages,
         websiteId: website.id,
         websiteName: website.name,
       }),
     });
   }
 
-  return NextResponse.json({ success: true });
+  return res.json({ success: true });
 }
 
 export default verifySignature(handler);
