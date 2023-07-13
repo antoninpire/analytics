@@ -52,7 +52,7 @@ export default async function TopPages(props: TopPagesProps) {
                 className="flex items-center justify-between relative px-2 py-1"
               >
                 <div
-                  className="absolute top-0 left-0 h-full bg-blue-400 rounded-md"
+                  className="absolute top-0 left-0 h-full bg-red-400 dark:bg-red-500 rounded-md"
                   style={{
                     width: `${(count / totalPages) * 100}%`,
                   }}

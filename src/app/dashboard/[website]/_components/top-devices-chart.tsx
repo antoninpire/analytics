@@ -12,7 +12,14 @@ import {
 type Props = {
   topDevices: { name: string; value: number }[];
 };
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+const COLORS = [
+  "#0088FE",
+  "#00C49F",
+  "#FFBB28",
+  "#FF8042",
+  "#6d28d9",
+  "#b91c1c",
+];
 const RADIAN = Math.PI / 180;
 const renderCustomizedLabel = ({
   cx,

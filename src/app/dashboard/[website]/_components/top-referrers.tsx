@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Chrome } from "lucide-react";
+import { ArrowUpRightFromCircle } from "lucide-react";
 
 type TopReferrersProps = {
   sessions: PageData["sessions"];
@@ -30,12 +30,12 @@ export default async function TopReferrers(props: TopReferrersProps) {
   );
 
   return (
-    <Card className="w-[45%] h-[400px]">
+    <Card className="w-[45%] h-[475px]">
       <CardHeader>
         <CardTitle className="text-xl">
           <div className="flex items-center justify-between">
             Top Sources
-            <Chrome className="w-6 h-6" />
+            <ArrowUpRightFromCircle className="w-6 h-6" />
           </div>
         </CardTitle>
         <CardDescription className="h-[20px]">
@@ -55,7 +55,7 @@ export default async function TopReferrers(props: TopReferrersProps) {
                 className="flex items-center justify-between relative px-2 py-1"
               >
                 <div
-                  className="absolute top-0 left-0 h-full bg-blue-400 rounded-md"
+                  className="absolute top-0 left-0 h-full bg-green-400 dark:bg-green-500 rounded-md"
                   style={{
                     width: `${(count / totalReferrers) * 100}%`,
                   }}

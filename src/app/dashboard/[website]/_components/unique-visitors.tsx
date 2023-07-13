@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArrowTopRightIcon } from "@radix-ui/react-icons";
+import { ArrowBottomLeftIcon, ArrowTopRightIcon } from "@radix-ui/react-icons";
 import { User } from "lucide-react";
 
 type UniqueVisitorsProps = {
@@ -54,7 +54,10 @@ export default async function UniqueVisitors(props: UniqueVisitorsProps) {
       <CardContent>
         <p className="text-2xl font-bold">{stats.total}</p>
         <div className="flex items-center gap-1 text-sm">
-          <ArrowTopRightIcon className="text-green-500" />
+          {stats.change >= 0 && (
+            <ArrowTopRightIcon className="text-green-500" />
+          )}
+          {stats.change < 0 && <ArrowBottomLeftIcon className="text-red-500" />}
           {stats.change}%
         </div>
       </CardContent>

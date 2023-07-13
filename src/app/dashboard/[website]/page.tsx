@@ -17,9 +17,15 @@ export type CurrentValue =
 
 type DateSearchParams = {
   f?: CurrentValue;
+  from?: string;
+  to?: string;
 };
 
-function getDatesFromCurrentValue(currentValue?: CurrentValue) {
+function getDatesFromCurrentValue(
+  currentValue?: CurrentValue,
+  from?: string,
+  to?: string
+) {
   if (currentValue === "yersteday")
     return {
       startDate: dayjs().subtract(1, "day").startOf("day").toDate(),
@@ -45,6 +51,11 @@ function getDatesFromCurrentValue(currentValue?: CurrentValue) {
       startDate: dayjs().subtract(365, "day").startOf("day").toDate(),
       endDate: dayjs().toDate(),
     };
+  else if (currentValue === "custom" && from !== undefined && to !== undefined)
+    return {
+      startDate: dayjs(from).toDate(),
+      endDate: dayjs(to).toDate(),
+    };
   return {
     startDate: dayjs().subtract(1, "day").toDate(),
     endDate: dayjs().toDate(),
@@ -65,7 +76,11 @@ export default async function WebsitePage({
 
   const currentValue = searchParams?.f ?? "last-24h";
 
-  const { startDate, endDate } = getDatesFromCurrentValue(currentValue);
+  const { startDate, endDate } = getDatesFromCurrentValue(
+    currentValue,
+    searchParams?.from,
+    searchParams?.to
+  );
 
   const visitors = await db
     .select({

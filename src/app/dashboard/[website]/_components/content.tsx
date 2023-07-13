@@ -8,8 +8,10 @@ import TopDevices from "@/app/dashboard/[website]/_components/top-devices";
 import TopPages from "@/app/dashboard/[website]/_components/top-pages";
 import TopReferrers from "@/app/dashboard/[website]/_components/top-referrers";
 import UniqueVisitors from "@/app/dashboard/[website]/_components/unique-visitors";
+import VisitorsEvolution from "@/app/dashboard/[website]/_components/visitors-evolution";
 import { CurrentValue } from "@/app/dashboard/[website]/page";
 import { Button } from "@/components/ui/button";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -60,6 +62,7 @@ async function fetchData(
         referrer: webSessionsTable.referrer,
         country: webSessionsTable.country,
         updated_at: webSessionsTable.updated_at,
+        created_at: webSessionsTable.created_at,
       })
       .from(webSessionsTable)
       .where(
@@ -173,76 +176,89 @@ export default async function DashboardContent(props: DashboardContentProps) {
     return diff < 1000 * 30;
   });
 
+  const label = getLabelFromCurrentValue(currentValue);
+
   return (
     <div className="min-h-screen py-5 text-sm leading-5 mt-4 text-secondary">
       <div className="flex items-center justify-between">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="secondary">
-              {getLabelFromCurrentValue(currentValue)}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-56">
-            <DropdownMenuLabel>Choose Range</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <Link href={`/dashboard/${websiteId}?f=last-24h`}>
+        <div className="flex items-center gap-1.5">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="secondary">{label}</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56">
+              <DropdownMenuLabel>Choose Range</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <Link href={`/dashboard/${websiteId}?f=last-24h`}>
+                  <DropdownMenuItem>
+                    <DropdownMenuCheckboxItem
+                      checked={!currentValue || currentValue === "last-24h"}
+                    />
+                    Last 24 hours
+                  </DropdownMenuItem>
+                </Link>
+                <Link href={`/dashboard/${websiteId}?f=yersteday`}>
+                  <DropdownMenuItem>
+                    <DropdownMenuCheckboxItem
+                      checked={currentValue === "yersteday"}
+                    />
+                    Yersteday
+                  </DropdownMenuItem>
+                </Link>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <Link href={`/dashboard/${websiteId}?f=last-7`}>
                 <DropdownMenuItem>
                   <DropdownMenuCheckboxItem
-                    checked={!currentValue || currentValue === "last-24h"}
+                    checked={currentValue === "last-7"}
                   />
-                  Last 24 hours
+                  Last 7 days
                 </DropdownMenuItem>
               </Link>
-              <Link href={`/dashboard/${websiteId}?f=yersteday`}>
+              <Link href={`/dashboard/${websiteId}?f=last-30`}>
                 <DropdownMenuItem>
                   <DropdownMenuCheckboxItem
-                    checked={currentValue === "yersteday"}
+                    checked={currentValue === "last-30"}
                   />
-                  Yersteday
+                  Last 30 days
                 </DropdownMenuItem>
               </Link>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <Link href={`/dashboard/${websiteId}?f=last-7`}>
-              <DropdownMenuItem>
-                <DropdownMenuCheckboxItem checked={currentValue === "last-7"} />
-                Last 7 days
-              </DropdownMenuItem>
-            </Link>
-            <Link href={`/dashboard/${websiteId}?f=last-30`}>
-              <DropdownMenuItem>
-                <DropdownMenuCheckboxItem
-                  checked={currentValue === "last-30"}
-                />
-                Last 30 days
-              </DropdownMenuItem>
-            </Link>
-            <Link href={`/dashboard/${websiteId}?f=last-90`}>
-              <DropdownMenuItem>
-                <DropdownMenuCheckboxItem
-                  checked={currentValue === "last-90"}
-                />
-                Last 90 days
-              </DropdownMenuItem>
-            </Link>
-            <Link href={`/dashboard/${websiteId}?f=last-365`}>
-              <DropdownMenuItem>
-                <DropdownMenuCheckboxItem
-                  checked={currentValue === "last-365"}
-                />
-                Last 365 days
-              </DropdownMenuItem>
-            </Link>
-            <DropdownMenuSeparator />
-            <Link href={`/dashboard/${websiteId}?f=custom`}>
-              <DropdownMenuItem>
-                <DropdownMenuCheckboxItem checked={currentValue === "custom"} />
-                Custom
-              </DropdownMenuItem>
-            </Link>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              <Link href={`/dashboard/${websiteId}?f=last-90`}>
+                <DropdownMenuItem>
+                  <DropdownMenuCheckboxItem
+                    checked={currentValue === "last-90"}
+                  />
+                  Last 90 days
+                </DropdownMenuItem>
+              </Link>
+              <Link href={`/dashboard/${websiteId}?f=last-365`}>
+                <DropdownMenuItem>
+                  <DropdownMenuCheckboxItem
+                    checked={currentValue === "last-365"}
+                  />
+                  Last 365 days
+                </DropdownMenuItem>
+              </Link>
+              <DropdownMenuSeparator />
+              <Link href={`/dashboard/${websiteId}?f=custom`}>
+                <DropdownMenuItem>
+                  <DropdownMenuCheckboxItem
+                    checked={currentValue === "custom"}
+                  />
+                  Custom
+                </DropdownMenuItem>
+              </Link>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          {currentValue === "custom" && (
+            <DateRangePicker
+              websiteId={websiteId}
+              startDate={startDate}
+              endDate={endDate}
+            />
+          )}
+        </div>
         <div className="flex items-center gap-1.5">
           <div
             className={`w-4 h-4 rounded-full ${
@@ -269,16 +285,23 @@ export default async function DashboardContent(props: DashboardContentProps) {
         />
         <NewVisitors pastVisitors={pastVisitors} visitors={visitors} />
       </div>
+      <div className="flex items-center gap-5 mt-5 justify-center">
+        <VisitorsEvolution
+          sessions={sessions}
+          endDate={endDate}
+          startDate={startDate}
+          label={label}
+        />
+        <TopReferrers sessions={sessions} />
+      </div>
+
       <div className="flex gap-5 items-center mt-5">
         <TopDevices sessions={sessions} />
-        <TopReferrers sessions={sessions} />
+        <TopCountries sessions={sessions} />
       </div>
       <div className="flex justify-between gap-5 items-center mt-5">
         <TopPages pageViews={pageViews} />
         <TopBrowsers sessions={sessions} />
-      </div>
-      <div className="mt-5">
-        <TopCountries sessions={sessions} />
       </div>
     </div>
   );

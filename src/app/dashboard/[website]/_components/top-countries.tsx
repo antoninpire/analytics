@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Chrome } from "lucide-react";
+import { MapPin } from "lucide-react";
 
 type TopCountriesProps = {
   sessions: PageData["sessions"];
@@ -37,7 +37,7 @@ export default async function TopCountries(props: TopCountriesProps) {
         <CardTitle className="text-xl">
           <div className="flex items-center justify-between">
             Top Countries
-            <Chrome className="w-6 h-6" />
+            <MapPin className="w-6 h-6" />
           </div>
         </CardTitle>
         <CardDescription className="h-[20px]">
@@ -57,13 +57,13 @@ export default async function TopCountries(props: TopCountriesProps) {
                 className="flex items-center justify-between relative px-2 py-1"
               >
                 <div
-                  className="absolute top-0 left-0 h-full bg-blue-400 rounded-md"
+                  className="absolute top-0 left-0 h-full bg-orange-400 dark:bg-orange-500 rounded-md"
                   style={{
                     width: `${(count / totalCountries) * 100}%`,
                   }}
                 />
                 <p className="text-sm z-10">
-                  {regionNames.of(country) ?? country}
+                  {regionNames.of(country) ?? country ?? "Unknown"}
                 </p>
                 <p className="text-sm z-10">{count}</p>
               </div>
