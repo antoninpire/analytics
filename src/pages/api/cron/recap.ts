@@ -6,7 +6,6 @@ import {
   webSessionsTable,
   webVisitorsTable,
 } from "@/lib/db/schema";
-import { verifySignature } from "@upstash/qstash/nextjs";
 import dayjs from "dayjs";
 import { and, eq, sql } from "drizzle-orm";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -132,4 +131,4 @@ async function handler(_req: NextApiRequest, res: NextApiResponse) {
   return res.json({ success: true });
 }
 
-export default verifySignature(handler);
+export default handler;
