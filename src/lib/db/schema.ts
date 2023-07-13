@@ -4,6 +4,7 @@ import {
   boolean,
   int,
   mysqlTable,
+  primaryKey,
   timestamp,
   uniqueIndex,
   varchar,
@@ -95,25 +96,22 @@ export type Website = InferModel<typeof websitesTable> & {
   user?: User;
 };
 
-// export const apiKeysTable = mysqlTable("api_keys", {
-//   id: varchar("id", { length: 128 }).primaryKey(),
-//   tenantId: varchar("tenantId", { length: 128 }).notNull(),
-//   hash: varchar("hash", { length: 128 }).notNull(),
-//   first_characters: varchar("first_characters", { length: 4 }).notNull(),
-//   last_characters: varchar("last_characters", { length: 4 }).notNull(),
-//   created_at: timestamp("created_at").notNull(),
-// });
-
-export const webVisitorsTable = mysqlTable("web_visitors", {
-  id: varchar("id", { length: 128 }).primaryKey(),
-  website_id: varchar("website_id", { length: 128 })
-    .notNull()
-    .references(() => websitesTable.id, {
-      onDelete: "cascade",
-      onUpdate: "cascade",
-    }),
-  created_at: timestamp("created_at").notNull(),
-});
+export const webVisitorsTable = mysqlTable(
+  "web_visitors",
+  {
+    id: varchar("id", { length: 128 }).primaryKey(),
+    website_id: varchar("website_id", { length: 128 })
+      .notNull()
+      .references(() => websitesTable.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    created_at: timestamp("created_at").notNull(),
+  },
+  (table) => ({
+    pk: primaryKey(table.id, table.website_id),
+  })
+);
 
 export const webVisitorsRelations = relations(
   webVisitorsTable,

@@ -61,7 +61,11 @@ export async function POST(request: Request) {
     const visitorId = ip === "Unknown" ? createId() : ip;
 
     const visitor = await db.query.webVisitorsTable.findFirst({
-      where: (table, { eq }) => eq(table.id, visitorId),
+      where: (table, { eq, and }) =>
+        and(
+          eq(table.id, visitorId),
+          eq(table.website_id, validated.website_token)
+        ),
     });
 
     if (!visitor) {
