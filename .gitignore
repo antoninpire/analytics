@@ -38,3 +38,4 @@ next-env.d.ts
 
 .parcel-cache
 dist
+.react-email

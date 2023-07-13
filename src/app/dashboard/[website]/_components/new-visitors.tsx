@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { getNewVisitors } from "@/lib/data/get-new-visitors";
 import { ArrowBottomLeftIcon, ArrowTopRightIcon } from "@radix-ui/react-icons";
 import { UserPlus } from "lucide-react";
 
@@ -17,16 +18,7 @@ type NewVisitorsProps = {
 export default async function NewVisitors(props: NewVisitorsProps) {
   const { visitors, pastVisitors } = props;
 
-  const count = visitors?.[0]?.count ?? 0;
-  const pastCount = pastVisitors?.[0]?.count ?? 0;
-
-  const change = pastCount
-    ? Math.floor(((count - pastCount) / pastCount) * 100)
-    : 100;
-  const stats = {
-    total: count,
-    change: change > 100 ? 100 : change,
-  };
+  const stats = getNewVisitors(visitors, pastVisitors);
 
   return (
     <Card className="w-[22vw] h-[200px]">

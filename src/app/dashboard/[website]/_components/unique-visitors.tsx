@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { getUniqueVisitors } from "@/lib/data/get-unique-visitors";
 import { ArrowBottomLeftIcon, ArrowTopRightIcon } from "@radix-ui/react-icons";
 import { User } from "lucide-react";
 
@@ -17,26 +18,7 @@ type UniqueVisitorsProps = {
 export default async function UniqueVisitors(props: UniqueVisitorsProps) {
   const { sessions, pastSessions } = props;
 
-  const allVisitors = new Set<string>(),
-    allPastVisitors = new Set<string>();
-  sessions.forEach((session) => {
-    allVisitors.add(session.visitor_id);
-  });
-  pastSessions.forEach((session) => {
-    allPastVisitors.add(session.visitor_id);
-  });
-
-  const visitors = allVisitors.size;
-  const pastVisitors = allPastVisitors.size;
-
-  const change = visitors
-    ? Math.floor(((visitors - pastVisitors) / pastVisitors) * 100)
-    : 100;
-
-  const stats = {
-    total: visitors,
-    change: change > 100 ? 100 : change,
-  };
+  const stats = getUniqueVisitors(sessions, pastSessions);
 
   return (
     <Card className="w-[22vw] h-[200px]">
