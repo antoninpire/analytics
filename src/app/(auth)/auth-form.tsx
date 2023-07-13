@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { authSchema } from "@/lib/validation/auth-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Github, Loader2 } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -132,14 +133,21 @@ export default function AuthForm({
           </span>
         </div>
       </div>
-      <Button variant="outline" type="button" disabled={isLoading}>
-        {isLoading ? (
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-        ) : (
-          <Github className="mr-2 h-4 w-4" />
-        )}{" "}
-        Github
-      </Button>
+      <Link href="/login/github" className="w-full">
+        <Button
+          variant="outline"
+          type="button"
+          disabled={isLoading}
+          className="w-full"
+        >
+          {isLoading ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Github className="mr-2 h-4 w-4" />
+          )}{" "}
+          Github
+        </Button>
+      </Link>
     </div>
   );
 }

@@ -13,6 +13,7 @@
   "dependencies": {
     "@hookform/resolvers": "^3.1.1",
     "@lucia-auth/adapter-mysql": "^1.1.1",
+    "@lucia-auth/oauth": "^1.2.1",
     "@paralleldrive/cuid2": "^2.2.1",
     "@radix-ui/react-alert-dialog": "^1.0.4",
     "@radix-ui/react-avatar": "^1.0.3",
