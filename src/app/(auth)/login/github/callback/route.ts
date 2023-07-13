@@ -1,3 +1,4 @@
+import { db } from "@/lib/db";
 import { auth, githubAuth } from "@/lib/lucia";
 import { LuciaOAuthRequestError } from "@lucia-auth/oauth";
 import { cookies } from "next/headers";
@@ -27,13 +28,29 @@ export const GET = async (request: NextRequest) => {
     });
   }
   try {
-    const { existingUser, createUser, providerUser } =
+    let { existingUser, createUser, providerUser, tokens } =
       await githubAuth.validateCallback(code);
 
-    if (providerUser.email === null)
-      return new Response(null, {
-        status: 400,
+    if (providerUser.email === null) {
+      const res = await fetch("https://api.github.com/user/emails", {
+        headers: {
+          Authorization: `token ${tokens.accessToken}`,
+        },
       });
+      const emails = await res.json();
+      if (!emails || emails.length === 0 || !emails[0].email) {
+        return new Response(null, {
+          status: 400,
+        });
+      }
+      providerUser.email = emails[0].email;
+
+      const currentUser = await db.query.usersTable.findFirst({
+        where: (table, { eq }) => eq(table.email, providerUser.email!),
+      });
+
+      existingUser = currentUser ? { userId: currentUser.id } : null;
+    }
 
     const getUser = async () => {
       if (existingUser) return existingUser;

@@ -2,6 +2,7 @@ import AddWebsiteDialog from "@/app/dashboard/_components/add-website-dialog";
 import EditWebsiteDialog from "@/app/dashboard/_components/edit-website-dialog";
 import Header from "@/app/dashboard/_components/header";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/lucia";
 import { cookies } from "next/headers";
@@ -29,9 +30,9 @@ export default async function DashboardExample() {
         {websites.length > 0 && (
           <div className="mt-8 flex flex-wrap gap-4 items-center">
             {websites.map((website) => (
-              <div
+              <Card
                 key={website.id}
-                className="w-[300px] h-[150px] bg-white dark:bg-gray-800 rounded-lg shadow-md p-4"
+                className="w-[300px] h-[150px] rounded-lg shadow-md p-4"
               >
                 <div className="flex justify-between items-center">
                   <h3 className="font-semibold">{website.name}</h3>
@@ -43,7 +44,7 @@ export default async function DashboardExample() {
                     <Button variant="link">Go to dashboard</Button>
                   </Link>
                 </div>
-              </div>
+              </Card>
             ))}
           </div>
         )}
