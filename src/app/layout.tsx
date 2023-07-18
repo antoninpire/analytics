@@ -18,6 +18,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <script
+          defer
+          data-token="mgzzqqwiw4jjd1gmodaymu6o"
+          src="https://analytics.antonin.dev/static/script.js"
+        ></script>
+      </head>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {children}
