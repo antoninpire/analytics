@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import { webVisitorsTable } from "@/lib/db/schema";
 import dayjs from "dayjs";
 import { eq, sql } from "drizzle-orm";
-import type { Metadata, ResolvingMetadata } from "next";
+import type { Metadata } from "next";
 
 export type CurrentValue =
   | "last-24h"
@@ -68,10 +68,7 @@ type Props = {
   searchParams: { [key: string]: string | string[] | undefined };
 };
 
-export async function generateMetadata(
-  { params, searchParams }: Props,
-  _parent?: ResolvingMetadata
-): Promise<Metadata> {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // read route params
   const websiteId = params.website;
 
