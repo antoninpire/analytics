@@ -1,3 +1,4 @@
+import { env } from "@/env.mjs";
 import { mySqlClient } from "@/lib/db";
 import { mysql2 } from "@lucia-auth/adapter-mysql";
 import { github } from "@lucia-auth/oauth/providers";
@@ -21,7 +22,7 @@ export const auth = lucia({
 });
 
 export const githubAuth = github(auth, {
-  clientId: process.env.GITHUB_CLIENT_ID ?? "",
-  clientSecret: process.env.GITHUB_CLIENT_SECRET ?? "",
+  clientId: env.GITHUB_CLIENT_ID,
+  clientSecret: env.GITHUB_CLIENT_SECRET,
   scope: ["user:email"],
 });
