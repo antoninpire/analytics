@@ -13,10 +13,10 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { sendEmail } from "../../../../emails";
 import Summary from "../../../../emails/summary";
 
-// Runs every first on the month
+// Runs every first of the month
 async function handler(_req: NextApiRequest, res: NextApiResponse) {
-  const startDateObj = dayjs().startOf("month").toDate();
-  const endDateObj = dayjs().endOf("month").toDate();
+  const startDateObj = dayjs().subtract(1, "month").startOf("month").toDate();
+  const endDateObj = dayjs().subtract(1, "month").endOf("month").toDate();
   const duration = endDateObj.getTime() - startDateObj.getTime();
   const pastEndDateObj = new Date(startDateObj.getTime() - duration);
 
