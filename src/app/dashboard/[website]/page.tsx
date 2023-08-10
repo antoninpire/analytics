@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { webVisitorsTable } from "@/lib/db/schema";
 import dayjs from "dayjs";
 import { eq, sql } from "drizzle-orm";
+import type { Metadata, ResolvingMetadata } from "next";
 
 export type CurrentValue =
   | "last-24h"
@@ -59,6 +60,27 @@ function getDatesFromCurrentValue(
   return {
     startDate: dayjs().subtract(1, "day").toDate(),
     endDate: dayjs().toDate(),
+  };
+}
+
+type Props = {
+  params: { website: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+};
+
+export async function generateMetadata(
+  { params, searchParams }: Props,
+  _parent?: ResolvingMetadata
+): Promise<Metadata> {
+  // read route params
+  const websiteId = params.website;
+
+  const website = await db.query.websitesTable.findFirst({
+    where: (table, { eq }) => eq(table.id, websiteId),
+  });
+
+  return {
+    title: `Dashboard | ${website?.name ?? "Unknown"}`,
   };
 }
 
