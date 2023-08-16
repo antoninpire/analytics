@@ -11,4 +11,4 @@ export const mySqlClient = mysql.createPool({
   password: env.DB_PASSWORD,
 });
 
-export const db = drizzle(mySqlClient, { schema });
+export const db = drizzle(mySqlClient, { schema, mode: "default" });
