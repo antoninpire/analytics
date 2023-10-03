@@ -1,6 +1,6 @@
 import { auth } from "@/lib/lucia";
 import { authSchema } from "@/lib/validation/auth-schema";
-import { cookies } from "next/headers";
+import * as context from "next/headers";
 import { NextResponse } from "next/server";
 
 export const POST = async (request: Request) => {
@@ -20,17 +20,22 @@ export const POST = async (request: Request) => {
 
   try {
     const user = await auth.createUser({
-      primaryKey: {
+      key: {
         providerId: "email",
-        providerUserId: email,
+        providerUserId: email.toLowerCase(),
         password,
       },
       attributes: {
         email,
       },
     });
-    const session = await auth.createSession(user.userId);
-    const authRequest = auth.handleRequest({ request, cookies });
+    const session = await auth.createSession({
+      userId: user.userId,
+      attributes: {
+        email,
+      },
+    });
+    const authRequest = auth.handleRequest(request.method, context);
     authRequest.setSession(session);
     // using redirect() ignores cookie
     return NextResponse.json({ success: true });

@@ -8,7 +8,7 @@ import {
 } from "@/lib/validation/website-schema";
 import { createId } from "@paralleldrive/cuid2";
 import { eq } from "drizzle-orm";
-import { cookies } from "next/headers";
+import * as context from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -25,9 +25,9 @@ export async function POST(request: Request) {
 
   const { name, url } = parsedData.data;
   try {
-    const authRequest = auth.handleRequest({ cookies });
-    const { user } = await authRequest.validateUser();
-    if (!user?.userId)
+    const authRequest = auth.handleRequest("POST", context);
+    const session = await authRequest.validate();
+    if (!session?.user?.userId)
       return NextResponse.json(
         {
           error: "Unauthorized",
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
 
     const previousWebsite = await db.query.websitesTable.findFirst({
       where: (table, { eq, and }) =>
-        and(eq(table.user_id, user.userId), eq(table.url, trimmedUrl)),
+        and(eq(table.user_id, session.user.userId), eq(table.url, trimmedUrl)),
     });
 
     if (previousWebsite !== undefined)
@@ -62,7 +62,7 @@ export async function POST(request: Request) {
       name,
       url: trimmedUrl,
       created_at: new Date(),
-      user_id: user.userId,
+      user_id: session.user.userId,
     });
     return NextResponse.json({
       websiteId,
@@ -89,9 +89,9 @@ export async function PATCH(request: Request) {
 
   const { name, url, id } = parsedData.data;
   try {
-    const authRequest = auth.handleRequest({ cookies });
-    const { user } = await authRequest.validateUser();
-    if (!user?.userId)
+    const authRequest = auth.handleRequest("PATCH", context);
+    const session = await authRequest.validate();
+    if (!session?.user?.userId)
       return NextResponse.json(
         {
           error: "Unauthorized",
@@ -103,7 +103,7 @@ export async function PATCH(request: Request) {
 
     const previousWebsite = await db.query.websitesTable.findFirst({
       where: (table, { eq, and }) =>
-        and(eq(table.user_id, user.userId), eq(table.id, id)),
+        and(eq(table.user_id, session.user.userId), eq(table.id, id)),
     });
 
     if (previousWebsite === undefined)
@@ -147,9 +147,9 @@ export async function DELETE(request: Request) {
 
   const { id } = parsedData.data;
   try {
-    const authRequest = auth.handleRequest({ cookies });
-    const { user } = await authRequest.validateUser();
-    if (!user?.userId)
+    const authRequest = auth.handleRequest("DELETE", context);
+    const session = await authRequest.validate();
+    if (!session?.user?.userId)
       return NextResponse.json(
         {
           error: "Unauthorized",
@@ -161,7 +161,7 @@ export async function DELETE(request: Request) {
 
     const previousWebsite = await db.query.websitesTable.findFirst({
       where: (table, { eq, and }) =>
-        and(eq(table.user_id, user.userId), eq(table.id, id)),
+        and(eq(table.user_id, session.user.userId), eq(table.id, id)),
     });
 
     if (previousWebsite === undefined)

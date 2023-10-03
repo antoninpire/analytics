@@ -1,10 +1,9 @@
-import { auth } from "@/lib/lucia";
 import { Metadata } from "next";
-import { cookies } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { buttonVariants } from "@/components/ui/button";
+import { getPageSession } from "@/lib/get-page-session";
 import { cn } from "@/lib/utils";
 import AuthForm from "../auth-form";
 
@@ -14,8 +13,7 @@ export const metadata: Metadata = {
 };
 
 const SignUpPage = async () => {
-  const authRequest = auth.handleRequest({ cookies });
-  const { session } = await authRequest.validateUser();
+  const session = await getPageSession();
   if (session) redirect("/dashboard");
 
   return (

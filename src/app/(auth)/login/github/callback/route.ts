@@ -1,13 +1,14 @@
 import { db } from "@/lib/db";
+import { getPageSession } from "@/lib/get-page-session";
 import { auth, githubAuth } from "@/lib/lucia";
-import { LuciaOAuthRequestError } from "@lucia-auth/oauth";
-import { cookies } from "next/headers";
+import { OAuthRequestError } from "@lucia-auth/oauth";
+import { User } from "lucia";
+import { cookies, headers } from "next/headers";
 
 import type { NextRequest } from "next/server";
 
 export const GET = async (request: NextRequest) => {
-  const authRequest = auth.handleRequest({ request, cookies });
-  const session = await authRequest.validate();
+  const session = await getPageSession();
   if (session) {
     return new Response(null, {
       status: 302,
@@ -28,49 +29,70 @@ export const GET = async (request: NextRequest) => {
     });
   }
   try {
-    let { existingUser, createUser, providerUser, tokens } =
+    let { getExistingUser, createUser, githubUser, githubTokens } =
       await githubAuth.validateCallback(code);
 
-    if (providerUser.email === null) {
+    let prevUser: User | null;
+    if (githubUser.email === null) {
       const res = await fetch("https://api.github.com/user/emails", {
         headers: {
-          Authorization: `token ${tokens.accessToken}`,
+          Authorization: `token ${githubTokens.accessToken}`,
         },
       });
       const emails = await res.json();
+
       if (!emails || emails.length === 0 || !emails[0].email) {
         return new Response(null, {
           status: 400,
         });
       }
-      providerUser.email = emails[0].email;
+      githubUser.email = emails[0].email;
 
       const currentUser = await db.query.usersTable.findFirst({
-        where: (table, { eq }) => eq(table.email, providerUser.email!),
+        where: (table, { eq }) => eq(table.email, githubUser.email!),
       });
 
-      existingUser = currentUser ? { userId: currentUser.id } : null;
+      prevUser = currentUser
+        ? { userId: currentUser.id, email: emails[0].email }
+        : null;
     }
 
+    let userExists = false;
     const getUser = async () => {
-      if (existingUser) return existingUser;
+      const existingUser = prevUser ?? (await getExistingUser());
+      if (existingUser) {
+        userExists = true;
+        return existingUser;
+      }
       const user = await createUser({
-        email: providerUser.email!,
+        attributes: {
+          email: githubUser.email ?? "",
+        },
       });
       return user;
     };
 
     const user = await getUser();
-    const session = await auth.createSession(user.userId);
+    const session = await auth.createSession({
+      userId: user.userId,
+      attributes: {
+        email: githubUser.email ?? "",
+      },
+    });
+    const authRequest = auth.handleRequest(request.method, {
+      cookies,
+      headers,
+    });
     authRequest.setSession(session);
     return new Response(null, {
       status: 302,
       headers: {
-        Location: "/",
+        Location: "/dashboard",
       },
     });
   } catch (e) {
-    if (e instanceof LuciaOAuthRequestError) {
+    console.error(e);
+    if (e instanceof OAuthRequestError) {
       // invalid code
       return new Response(null, {
         status: 400,

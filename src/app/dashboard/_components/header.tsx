@@ -29,9 +29,8 @@ import {
 } from "@/components/ui/tooltip";
 import { db } from "@/lib/db";
 import { Website } from "@/lib/db/schema";
-import { auth } from "@/lib/lucia";
+import { getPageSession } from "@/lib/get-page-session";
 import { ArrowLeft, ChevronsUpDown } from "lucide-react";
-import { cookies } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -41,13 +40,13 @@ type HeaderProps = {
 };
 
 export default async function Header(props: HeaderProps) {
-  const authRequest = auth.handleRequest({ cookies });
-  const { session, user } = await authRequest.validateUser();
+  const session = await getPageSession();
   if (!session) redirect("/login");
+
   const websites =
     props.websites ??
     (await db.query.websitesTable.findMany({
-      where: (table, { eq }) => eq(table.user_id, session.userId),
+      where: (table, { eq }) => eq(table.user_id, session.user.userId),
     }));
 
   const { website: currentWebsiteId } = props;
@@ -111,7 +110,7 @@ export default async function Header(props: HeaderProps) {
               <Avatar>
                 <AvatarImage
                   src={`https://api.dicebear.com/6.x/micah/svg?seed=${encodeURI(
-                    user.email
+                    session.user.email
                   )}`}
                 />
                 <AvatarFallback>CN</AvatarFallback>
@@ -120,7 +119,7 @@ export default async function Header(props: HeaderProps) {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel className="font-normal text-gray-500 dark:text-gray-400">
-              {user.email}
+              {session.user.email}
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <Link href="/dashboard">

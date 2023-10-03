@@ -4,18 +4,18 @@ import Header from "@/app/dashboard/_components/header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { db } from "@/lib/db";
-import { auth } from "@/lib/lucia";
-import { cookies } from "next/headers";
+import { getPageSession } from "@/lib/get-page-session";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default async function DashboardExample() {
-  const authRequest = auth.handleRequest({ cookies });
-  const { session } = await authRequest.validateUser();
+  const session = await getPageSession();
   if (!session) redirect("/login");
+
   const websites = await db.query.websitesTable.findMany({
-    where: (table, { eq }) => eq(table.user_id, session.userId),
+    where: (table, { eq }) => eq(table.user_id, session.user.userId),
   });
+
   return (
     <>
       <Header websites={websites} />

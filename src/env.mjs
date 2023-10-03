@@ -3,10 +3,7 @@ import { z } from "zod";
 
 export const env = createEnv({
   server: {
-    DB_HOST: z.string().min(1),
-    DB_USER: z.string().min(1),
-    DB_PASSWORD: z.string().min(1),
-    DB_NAME: z.string().min(1),
+    DATABASE_URL: z.string().min(1),
     GITHUB_CLIENT_ID: z.string().min(1),
     GITHUB_CLIENT_SECRET: z.string().min(1),
     QSTASH_CURRENT_SIGNING_KEY: z.string().min(1),

@@ -1,6 +1,6 @@
 import { auth } from "@/lib/lucia";
 import { authSchema } from "@/lib/validation/auth-schema";
-import { cookies } from "next/headers";
+import * as context from "next/headers";
 import { NextResponse } from "next/server";
 
 export const POST = async (request: Request) => {
@@ -18,9 +18,14 @@ export const POST = async (request: Request) => {
 
   const { email, password } = parsedData.data;
   try {
-    const authRequest = auth.handleRequest({ request, cookies });
     const key = await auth.useKey("email", email, password);
-    const session = await auth.createSession(key.userId);
+    const session = await auth.createSession({
+      userId: key.userId,
+      attributes: {
+        email,
+      },
+    });
+    const authRequest = auth.handleRequest(request.method, context);
     authRequest.setSession(session);
     return new Response(null, {
       status: 302,

@@ -1,23 +1,26 @@
 import { env } from "@/env.mjs";
-import { mySqlClient } from "@/lib/db";
-import { mysql2 } from "@lucia-auth/adapter-mysql";
+import { connection } from "@/lib/db";
+import { planetscale } from "@lucia-auth/adapter-mysql";
 import { github } from "@lucia-auth/oauth/providers";
-import lucia from "lucia-auth";
-import { nextjs } from "lucia-auth/middleware";
+import { lucia } from "lucia";
+import { nextjs_future } from "lucia/middleware";
 
 export const auth = lucia({
-  adapter: mysql2(mySqlClient),
+  adapter: planetscale(connection, {
+    user: "analytics_auth_user",
+    session: "analytics_auth_session",
+    key: "analytics_auth_key",
+  }),
   env: process.env.NODE_ENV === "production" ? "PROD" : "DEV",
-  middleware: nextjs(),
-  transformDatabaseUser: (userData) => {
+  middleware: nextjs_future(),
+  getUserAttributes: (userData) => {
     return {
       userId: userData.id,
       email: userData.email,
     };
   },
-  sessionExpiresIn: {
-    activePeriod: 1000 * 60 * 60 * 24 * 30, // 1 month
-    idlePeriod: 0, // disable session renewal
+  sessionCookie: {
+    expires: false,
   },
 });
 
@@ -26,3 +29,5 @@ export const githubAuth = github(auth, {
   clientSecret: env.GITHUB_CLIENT_SECRET,
   scope: ["user:email"],
 });
+
+export type Auth = typeof auth;

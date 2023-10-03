@@ -1,11 +1,11 @@
-import { auth, githubAuth } from "@/lib/lucia";
+import { getPageSession } from "@/lib/get-page-session";
+import { githubAuth } from "@/lib/lucia";
 import { cookies } from "next/headers";
 
 import type { NextRequest } from "next/server";
 
 export const GET = async (request: NextRequest) => {
-  const authRequest = auth.handleRequest({ request, cookies });
-  const session = await authRequest.validate();
+  const session = await getPageSession();
   if (session) {
     return new Response(null, {
       status: 302,
