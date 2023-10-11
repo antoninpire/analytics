@@ -6,7 +6,7 @@ import {
   webSessionsTable,
   webVisitorsTable,
 } from "@/lib/db/schema";
-import { verifySignature } from "@upstash/qstash/nextjs";
+import { verifySignature } from "@upstash/qstash/dist/nextjs";
 import dayjs from "dayjs";
 import { and, eq, sql } from "drizzle-orm";
 import { NextApiRequest, NextApiResponse } from "next";
